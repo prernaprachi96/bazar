@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server'
-import { newOrderId, saveOrder, sendOrderEmail } from '@/lib/server/order-db'
+import { getOrdersForUser, newOrderId, saveOrder, sendOrderEmail } from '@/lib/server/order-db'
 import type { CartItem, DeliveryAddress, Order, PaymentMethod } from '@/lib/types'
 
 const DELIVERY_SLOTS = ['Today, 6–8 PM', 'Tomorrow, 8–10 AM', 'Tomorrow, 4–6 PM']
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const email = searchParams.get('email')
+  if (!email) return NextResponse.json({ error: 'Missing email.' }, { status: 400 })
+  const orders = getOrdersForUser(email)
+  return NextResponse.json({ orders })
+}
 
 export async function POST(req: Request) {
   try {

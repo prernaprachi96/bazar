@@ -39,10 +39,30 @@ export function saveOrder(order: Order) {
   writeOrders(orders)
 }
 
+export function updateOrderStatus(orderId: string, status: Order['status']): Order | null {
+  const orders = readOrders()
+  const idx = orders.findIndex((o) => o.id === orderId)
+  if (idx === -1) return null
+  orders[idx] = { ...orders[idx], status }
+  writeOrders(orders)
+  return orders[idx]
+}
+
+export function getOrder(orderId: string): Order | null {
+  return readOrders().find((o) => o.id === orderId) ?? null
+}
+
 export function getOrdersForUser(email: string): Order[] {
   return readOrders()
     .filter((o) => o.userEmail.toLowerCase() === email.toLowerCase())
     .sort((a, b) => b.placedAt - a.placedAt)
+}
+
+const STATUS_LABEL: Record<Order['status'], string> = {
+  confirmed: 'Order Confirmed',
+  packed: 'Packed',
+  out_for_delivery: 'Out for Delivery',
+  delivered: 'Delivered',
 }
 
 /**
@@ -85,11 +105,34 @@ export function buildOrderEmail(order: Order) {
 
 export async function sendOrderEmail(order: Order): Promise<{ sent: boolean; subject: string; html: string }> {
   const { subject, html } = buildOrderEmail(order)
+  return deliverEmail(order.userEmail, subject, html)
+}
+
+/**
+ * Builds + sends a short status-update email (e.g. "Out for delivery") —
+ * the same pattern BigBasket/Amazon use: one email per meaningful status
+ * change, not just at checkout.
+ */
+export async function sendStatusUpdateEmail(order: Order): Promise<{ sent: boolean; subject: string; html: string }> {
+  const subject = `Update on order #${order.id}: ${STATUS_LABEL[order.status]}`
+  const html = `
+    <div style="font-family:sans-serif;max-width:480px;margin:auto">
+      <h2>${STATUS_LABEL[order.status]}</h2>
+      <p>Hi ${order.address.fullName}, your order <strong>#${order.id}</strong> is now <strong>${STATUS_LABEL[order.status]}</strong>.</p>
+      <p><strong>Delivery slot:</strong> ${order.slot}<br/>
+         <strong>Delivering to:</strong> ${order.address.line1}, ${order.address.city}, ${order.address.state} ${order.address.pincode}</p>
+      <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+      <p style="color:#888;font-size:12px">Order ID: ${order.id}</p>
+    </div>
+  `
+  return deliverEmail(order.userEmail, subject, html)
+}
+
+async function deliverEmail(to: string, subject: string, html: string): Promise<{ sent: boolean; subject: string; html: string }> {
   const apiKey = process.env.RESEND_API_KEY
 
   if (!apiKey) {
-    // No email provider configured — just log it so it's visible in server logs.
-    console.log(`[mock email] would send "${subject}" to ${order.userEmail}`)
+    console.log(`[mock email] would send "${subject}" to ${to}`)
     return { sent: false, subject, html }
   }
 
@@ -99,7 +142,7 @@ export async function sendOrderEmail(order: Order): Promise<{ sent: boolean; sub
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: process.env.RESEND_FROM_EMAIL ?? 'orders@petal.app',
-        to: order.userEmail,
+        to,
         subject,
         html,
       }),

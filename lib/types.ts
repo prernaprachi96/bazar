@@ -90,5 +90,7 @@ export interface Order {
   paymentMethod: PaymentMethod
   slot: string
   placedAt: number
-  status: 'confirmed'
+  status: OrderStatus
 }
+
+export type OrderStatus = 'confirmed' | 'packed' | 'out_for_delivery' | 'delivered'

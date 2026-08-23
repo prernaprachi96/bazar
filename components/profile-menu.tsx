@@ -1,10 +1,10 @@
 'use client'
 
-import { LogOut, User as UserIcon } from 'lucide-react'
+import { LogOut, Package, User as UserIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/components/auth-provider'
 
-export function ProfileMenu() {
+export function ProfileMenu({ onOpenOrders }: { onOpenOrders: () => void }) {
   const { user, logOut } = useAuth()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -55,6 +55,16 @@ export function ProfileMenu() {
             <UserIcon className="size-3.5 shrink-0" aria-hidden="true" />
             Member since {memberSince}
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false)
+              onOpenOrders()
+            }}
+            className="mb-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+          >
+            <Package className="size-4" aria-hidden="true" /> My Orders
+          </button>
           <button
             type="button"
             onClick={() => {

@@ -6,6 +6,7 @@ import { useAuth } from '@/components/auth-provider'
 import { ChatPanel } from '@/components/chat-panel'
 import { CheckoutFlow } from '@/components/checkout-flow'
 import { CategoryRail } from '@/components/category-rail'
+import { OrderHistory } from '@/components/order-history'
 import { ProfileMenu } from '@/components/profile-menu'
 import { ProductGrid } from '@/components/product-grid'
 import { SearchResults } from '@/components/search-results'
@@ -51,6 +52,7 @@ export function AssistantApp() {
   const [cartOpen, setCartOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const [ordersOpen, setOrdersOpen] = useState(false)
   const processingRef = useRef(false)
 
   const pushMessage = useCallback((msg: Omit<ChatMessage, 'id'>) => {
@@ -232,7 +234,7 @@ export function AssistantApp() {
                 </span>
               )}
             </button>
-            <ProfileMenu />
+            <ProfileMenu onOpenOrders={() => setOrdersOpen(true)} />
           </div>
 
           <div className="order-4 w-full sm:order-2 sm:w-auto sm:flex-1">
@@ -365,6 +367,9 @@ export function AssistantApp() {
           onOrderComplete={handleClear}
         />
       )}
+
+      {/* Order history drawer */}
+      {ordersOpen && user && <OrderHistory userEmail={user.email} onClose={() => setOrdersOpen(false)} />}
     </main>
   )
 }
