@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const email = searchParams.get('email')
   if (!email) return NextResponse.json({ error: 'Missing email.' }, { status: 400 })
-  const orders = getOrdersForUser(email)
+  const orders = await getOrdersForUser(email)
   return NextResponse.json({ orders })
 }
 
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       status: 'confirmed',
     }
 
-    saveOrder(order)
+    await saveOrder(order)
     const email = await sendOrderEmail(order)
 
     return NextResponse.json({ order, email })

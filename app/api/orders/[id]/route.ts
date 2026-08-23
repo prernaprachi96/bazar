@@ -11,7 +11,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (!VALID.includes(status)) {
       return NextResponse.json({ error: 'Invalid status.' }, { status: 400 })
     }
-    const order = updateOrderStatus(id, status)
+    const order = await updateOrderStatus(id, status)
     if (!order) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
 
     const email = await sendStatusUpdateEmail(order)
@@ -23,7 +23,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const order = getOrder(id)
+  const order = await getOrder(id)
   if (!order) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
   return NextResponse.json({ order })
 }
