@@ -152,6 +152,7 @@ export function parseCommand(input: string): ParsedCommand {
     return { intent: 'ADD_ITEM', item: bareItem, quantity, raw }
   }
   // A single/short bare noun -> assume add
+  // A single/short bare noun -> assume add
   if (bareItem && bareItem.split(' ').length <= 3 && bareItem.length > 1) {
     return { intent: 'ADD_ITEM', item: bareItem, raw }
   }

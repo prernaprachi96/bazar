@@ -1,5 +1,6 @@
 'use client'
 
+import { t } from '@/lib/i18n'
 import { Flower2, MessageCircle, ShoppingBasket, X } from 'lucide-react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/components/auth-provider'
@@ -55,6 +56,8 @@ export function AssistantApp() {
   const [ordersOpen, setOrdersOpen] = useState(false)
   const processingRef = useRef(false)
 
+  const tr = t(language)
+
   const pushMessage = useCallback((msg: Omit<ChatMessage, 'id'>) => {
     setMessages((prev) => [...prev, { ...msg, id: nextId() }])
   }, [])
@@ -69,7 +72,6 @@ export function AssistantApp() {
       setInputText('')
       setProcessing(true)
 
-      // Brief pause so the "thinking" state is visible for voice/NLP feedback.
       await new Promise((r) => setTimeout(r, 350))
 
       const parsed = store.parseCommand(text)
@@ -84,7 +86,7 @@ export function AssistantApp() {
         case 'REMOVE_ITEM':
           result = parsed.item
             ? store.removeItem(parsed.item)
-            : { intent: 'REMOVE_ITEM', reply: 'Which item should I remove from your list?' }
+            : { intent: 'REMOVE_ITEM', reply: tr.removeWhich }
           break
 
         case 'CLEAR':
@@ -101,22 +103,22 @@ export function AssistantApp() {
           const label =
             parsed.item ||
             (parsed.maxPrice != null
-              ? `under $${parsed.maxPrice}`
+              ? tr.underPrice(parsed.maxPrice)
               : parsed.minPrice != null
-                ? `over $${parsed.minPrice}`
+                ? tr.overPrice(parsed.minPrice)
                 : 'items')
           setSearch({ query: label, results, loading: false })
           const priceNote =
             parsed.maxPrice != null
-              ? ` under $${parsed.maxPrice}`
+              ? tr.underPrice(parsed.maxPrice)
               : parsed.minPrice != null
-                ? ` over $${parsed.minPrice}`
+                ? tr.overPrice(parsed.minPrice)
                 : ''
           result = {
             intent: parsed.intent,
             reply: results.length
-              ? `Found ${results.length} match${results.length === 1 ? '' : 'es'} for "${label}"${priceNote}. Tap Add on any of them.`
-              : `I couldn't find anything for "${label}"${priceNote}. Try another item or price.`,
+              ? tr.searchFound(results.length, label, priceNote)
+              : tr.searchNone(label, priceNote),
           }
           break
         }
@@ -124,10 +126,10 @@ export function AssistantApp() {
         case 'SUGGEST': {
           const s = getSuggestions(store.cart)
           const picks = [...s.seasonal.slice(0, 2), ...s.onSale.slice(0, 1)].slice(0, 3)
-          const low = s.lowStock.length ? ` You may be running low on ${s.lowStock.join(', ')}.` : ''
+          const low = s.lowStock.length ? ` ${tr.lowStock} ${s.lowStock.join(', ')}.` : ''
           result = {
             intent: 'SUGGEST',
-            reply: `Here are a few ideas based on what's in season and on sale.${low}`,
+            reply: `${tr.suggestIntro}${low}`,
             products: picks,
           }
           break
@@ -136,8 +138,7 @@ export function AssistantApp() {
         default:
           result = {
             intent: 'UNKNOWN',
-            reply:
-              'I didn\'t quite catch that. Try "Add milk", "Remove bread", "Find apples under $3", or "Suggest something".',
+            reply: tr.unknownCommand,
           }
       }
 
@@ -147,7 +148,7 @@ export function AssistantApp() {
       setProcessing(false)
       processingRef.current = false
     },
-    [store, pushMessage, notify],
+    [store, pushMessage, notify, tr],
   )
 
   const handleFinalSpeech = useCallback(
@@ -195,8 +196,6 @@ export function AssistantApp() {
     [store.cart],
   )
 
-  // Out-of-stock products are filtered out everywhere they'd be browsable —
-  // if a product isn't available it simply doesn't appear.
   const availableProducts = useMemo(() => PRODUCTS.filter((p) => !p.outOfStock), [])
 
   const categoryProducts = useMemo(
@@ -209,7 +208,6 @@ export function AssistantApp() {
 
   return (
     <main className="min-h-dvh w-full">
-      {/* Top navbar */}
       <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm shadow-primary/30">
@@ -249,6 +247,7 @@ export function AssistantApp() {
               supported={speech.supported}
               micError={speech.error}
               language={language}
+              translations={tr}
               onLanguageChange={setLanguage}
             />
           </div>
@@ -256,10 +255,8 @@ export function AssistantApp() {
       </header>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6">
-        {/* Category rail */}
         <CategoryRail active={activeCategory} onSelect={setActiveCategory} />
 
-        {/* Search results override the grid when present */}
         {search ? (
           <SearchResults
             query={search.query}
@@ -280,7 +277,6 @@ export function AssistantApp() {
         <SuggestionsPanel cart={store.cart} onAdd={handleAddProduct} />
       </div>
 
-      {/* Floating chat toggle */}
       <button
         type="button"
         onClick={() => setChatOpen(true)}
@@ -290,7 +286,6 @@ export function AssistantApp() {
         <MessageCircle className="size-6" aria-hidden="true" />
       </button>
 
-      {/* Chat drawer */}
       {chatOpen && (
         <div className="fixed inset-0 z-40 flex justify-end bg-foreground/20 backdrop-blur-sm" role="dialog" aria-label="Assistant chat">
           <div className="flex h-dvh w-full max-w-md flex-col bg-background p-4 shadow-2xl sm:p-5">
@@ -317,12 +312,11 @@ export function AssistantApp() {
         </div>
       )}
 
-      {/* Cart drawer */}
       {cartOpen && (
         <div className="fixed inset-0 z-40 flex justify-end bg-foreground/20 backdrop-blur-sm" role="dialog" aria-label="Shopping cart">
           <div className="flex h-dvh w-full max-w-md flex-col overflow-y-auto bg-background p-4 shadow-2xl sm:p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-display text-base font-bold text-foreground">Your Cart</h2>
+              <h2 className="font-display text-base font-bold text-foreground">{tr.shoppingList}</h2>
               <button
                 type="button"
                 onClick={() => setCartOpen(false)}
@@ -349,14 +343,13 @@ export function AssistantApp() {
                 }}
                 className="mt-4 h-11 shrink-0 rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/30"
               >
-                Proceed to checkout · ${store.total.toFixed(2)}
+                {tr.checkout} · ${store.total.toFixed(2)}
               </button>
             )}
           </div>
         </div>
       )}
 
-      {/* Checkout drawer */}
       {checkoutOpen && user && (
         <CheckoutFlow
           cart={store.cart}
@@ -368,7 +361,6 @@ export function AssistantApp() {
         />
       )}
 
-      {/* Order history drawer */}
       {ordersOpen && user && <OrderHistory userEmail={user.email} onClose={() => setOrdersOpen(false)} />}
     </main>
   )

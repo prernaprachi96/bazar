@@ -2,12 +2,18 @@
 
 import { Loader2, Mic, Search, Send } from 'lucide-react'
 import type { Language } from '@/lib/types'
+import { type Translations } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
 
 const LANGUAGES: { code: Language; label: string }[] = [
   { code: 'en-US', label: 'English' },
   { code: 'hi-IN', label: 'हिन्दी' },
   { code: 'es-ES', label: 'Español' },
+  { code: 'fr-FR', label: 'Français' },
+  { code: 'de-DE', label: 'Deutsch' },
+  { code: 'ja-JP', label: '日本語' },
+  { code: 'ar-SA', label: 'العربية' },
+  { code: 'pt-BR', label: 'Português' },
 ]
 
 interface VoiceSearchBarProps {
@@ -21,6 +27,7 @@ interface VoiceSearchBarProps {
   supported: boolean
   micError: string | null
   language: Language
+  translations: Translations
   onLanguageChange: (l: Language) => void
 }
 
@@ -35,6 +42,7 @@ export function VoiceSearchBar({
   supported,
   micError,
   language,
+  translations,
   onLanguageChange,
 }: VoiceSearchBarProps) {
   return (
@@ -51,7 +59,7 @@ export function VoiceSearchBar({
                 onSubmit()
               }
             }}
-            placeholder={listening ? 'Listening…' : 'Say or type: "Add 2 milk", "Find apples under $3"'}
+            placeholder={listening ? translations.listening : translations.placeholder}
             aria-label="Voice or text command"
             className="h-12 w-full rounded-full border border-border bg-card pl-11 pr-24 text-sm font-medium text-card-foreground shadow-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
           />
@@ -110,25 +118,25 @@ export function VoiceSearchBar({
       {listening && (
         <div className="flex items-center gap-2 px-4 text-xs font-semibold text-primary">
           <Waveform />
-          <span>Listening… speak now</span>
+          <span>{translations.listening}</span>
         </div>
       )}
 
       {!supported && (
         <p className="px-4 text-xs text-muted-foreground">
-          Voice input isn&apos;t supported in this browser — you can still type commands.
+          {translations.voiceUnsupported}
         </p>
       )}
 
       {micError && (
         <p className="px-4 text-xs font-medium text-destructive" role="alert">
           {micError === 'permission'
-            ? 'Microphone access was blocked. Enable it in your browser settings to use voice.'
+            ? translations.micBlocked
             : micError === 'no-speech'
-              ? "I didn't catch that — try speaking again."
+              ? translations.noSpeech
               : micError === 'unsupported'
-                ? 'Voice input is not available in this browser.'
-                : 'Something went wrong with voice input. Please try again.'}
+                ? translations.voiceUnsupported
+                : translations.networkError}
         </p>
       )}
     </div>

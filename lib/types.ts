@@ -66,7 +66,7 @@ export interface ParsedCommand {
   raw: string
 }
 
-export type Language = 'en-US' | 'hi-IN' | 'es-ES'
+export type Language = 'en-US' | 'hi-IN' | 'es-ES' | 'fr-FR' | 'de-DE' | 'ja-JP' | 'ar-SA' | 'pt-BR'
 
 export interface DeliveryAddress {
   fullName: string
