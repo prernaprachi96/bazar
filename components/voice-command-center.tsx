@@ -45,21 +45,14 @@ export function VoiceCommandCenter({
       <div className="relative grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/80 px-3 py-1 text-xs font-bold text-primary shadow-sm">
-            <span
-              className={`size-2 rounded-full ${
-                listening ? 'animate-pulse bg-primary' : 'bg-emerald-500'
-              }`}
-            />
+            <span className={`size-2 rounded-full ${listening ? 'animate-pulse bg-primary' : 'bg-emerald-500'}`} />
             BAZAR VOICE COMMERCE
           </div>
-
           <h2 className="max-w-xl font-display text-2xl font-black tracking-tight text-foreground sm:text-3xl">
             Shop by speaking. <span className="text-primary">Simple as that.</span>
           </h2>
-
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Add items, manage quantities, find products by price, and get smart suggestions
-            without touching your list.
+            Add items, manage quantities, find products by price, and get smart suggestions without touching your list.
           </p>
 
           <div className="mt-5 flex flex-wrap gap-2">
@@ -87,56 +80,26 @@ export function VoiceCommandCenter({
               listening ? 'bg-destructive shadow-destructive/30' : 'bg-primary shadow-primary/30'
             }`}
           >
-            {listening && (
-              <span
-                className="absolute inset-0 animate-ping rounded-full bg-destructive/30"
-                aria-hidden="true"
-              />
-            )}
+            {listening && <span className="absolute inset-0 animate-ping rounded-full bg-destructive/30" aria-hidden="true" />}
             <Mic className="relative size-8" aria-hidden="true" />
           </button>
-
           <p className="mt-3 text-sm font-bold text-card-foreground">{status}</p>
-
           <p className="mt-1 min-h-5 max-w-52 truncate text-xs text-muted-foreground">
-            {transcript ||
-              (micSupported
-                ? 'Tap the microphone to start'
-                : 'Voice input is unavailable in this browser')}
+            {transcript || (micSupported ? 'Tap the microphone to start' : 'Voice input is unavailable in this browser')}
           </p>
         </div>
       </div>
 
       <div className="relative mt-5 grid grid-cols-3 gap-2 border-t border-border/70 pt-4 sm:max-w-md">
-        <Metric
-          icon={<Languages className="size-3.5" aria-hidden="true" />}
-          value="8"
-          label="languages"
-        />
-        <Metric
-          icon={<Sparkles className="size-3.5" aria-hidden="true" />}
-          value="Smart"
-          label="suggestions"
-        />
-        <Metric
-          icon={<CheckCircle2 className="size-3.5" aria-hidden="true" />}
-          value={String(itemCount)}
-          label={itemCount === 1 ? 'item in cart' : 'items in cart'}
-        />
+        <Metric icon={<Languages className="size-3.5" aria-hidden="true" />} value="8" label="languages" />
+        <Metric icon={<Sparkles className="size-3.5" aria-hidden="true" />} value="Smart" label="suggestions" />
+        <Metric icon={<CheckCircle2 className="size-3.5" aria-hidden="true" />} value={String(itemCount)} label={itemCount === 1 ? 'item in cart' : 'items in cart'} />
       </div>
     </section>
   )
 }
 
-function Metric({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode
-  value: string
-  label: string
-}) {
+function Metric({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
     <div className="flex items-center gap-1.5 text-muted-foreground">
       <span className="text-primary">{icon}</span>
