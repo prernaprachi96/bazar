@@ -1,7 +1,6 @@
 'use client'
 
 import { Minus, Plus, ShoppingBasket, Trash2, X } from 'lucide-react'
-import Image from 'next/image'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { CATEGORY_COLOR } from '@/lib/products'
@@ -16,15 +15,13 @@ interface ShoppingListProps {
   onClear: () => void
 }
 
-// CHANGED: ₹ symbol + 83x conversion rate (1 USD ≈ 83 INR)
-const USD_TO_INR = 83
-function toRupees(usd: number) {
-  return `₹${(usd * USD_TO_INR).toFixed(0)}`
-}
-
-// CHANGED: Unsplash image per item name
+// CHANGED: Picsum photos with stable seed from name — always works, no API key
 function getImageUrl(name: string) {
-  return `https://source.unsplash.com/40x40/?${encodeURIComponent(name.toLowerCase())},food,grocery`
+  let seed = 0
+  for (let i = 0; i < name.length; i++) {
+    seed = (seed * 31 + name.charCodeAt(i)) % 1000
+  }
+  return `https://picsum.photos/seed/${seed}/36/36`
 }
 
 export function ShoppingList({ cart, total, hydrated, onIncrement, onRemove, onClear }: ShoppingListProps) {
@@ -99,7 +96,7 @@ export function ShoppingList({ cart, total, hydrated, onIncrement, onRemove, onC
                   >
                     {/* CHANGED: item image added */}
                     <div className="relative shrink-0 size-9 rounded-full overflow-hidden bg-secondary">
-                      <Image
+                      <img
                         src={getImageUrl(item.name)}
                         alt={item.name}
                         width={36}

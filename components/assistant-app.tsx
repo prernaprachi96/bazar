@@ -1,7 +1,7 @@
 'use client'
 
 import { t } from '@/lib/i18n'
-import { Flower2, MessageCircle, ShoppingBasket, X } from 'lucide-react'
+import { MessageCircle, ShoppingBag, ShoppingBasket, X } from 'lucide-react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/components/auth-provider'
 import { ChatPanel } from '@/components/chat-panel'
@@ -211,10 +211,10 @@ export function AssistantApp() {
       <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm shadow-primary/30">
-            <Flower2 className="size-5" aria-hidden="true" />
+            <ShoppingBag className="size-5" aria-hidden="true" />
           </span>
           <div className="hidden shrink-0 sm:block">
-            <h1 className="font-display text-lg font-bold tracking-tight text-foreground">BAZAR</h1>
+            <h1 className="text-2xl font-black tracking-widest text-primary uppercase" style={{fontFamily: "'Quicksand', sans-serif", letterSpacing: "0.15em"}}>BAZAR</h1>
             <p className="text-[11px] text-muted-foreground">Voice shopping assistant</p>
           </div>
 
@@ -343,7 +343,7 @@ export function AssistantApp() {
                 }}
                 className="mt-4 h-11 shrink-0 rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/30"
               >
-                {tr.checkout} · ${store.total.toFixed(2)}
+                {tr.checkout} · ₹{(store.total * 83).toFixed(0)}
               </button>
             )}
           </div>
