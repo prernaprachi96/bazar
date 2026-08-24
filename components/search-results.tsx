@@ -3,6 +3,7 @@
 import { SearchX, X } from 'lucide-react'
 import { ProductCard } from '@/components/product-card'
 import type { Language, Product } from '@/lib/types'
+import { ui } from '@/lib/ui-translations'
 
 interface SearchResultsProps {
   query: string
@@ -21,14 +22,16 @@ export function SearchResults({
   onAdd,
   onClose,
 }: SearchResultsProps) {
+  const copy = ui(language)
+
   return (
     <section
-      aria-label="Search results"
+      aria-label={copy.searchResults}
       className="rounded-3xl border border-border bg-card p-4"
     >
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-display text-sm font-bold text-card-foreground">
-          {query ? `Results for "${query}"` : 'Search results'}
+          {query ? `${copy.resultsFor} "${query}"` : copy.searchResults}
         </h2>
 
         <button
@@ -52,12 +55,15 @@ export function SearchResults({
         </div>
       ) : results.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-8 text-center">
-          <SearchX className="size-8 text-muted-foreground" aria-hidden="true" />
+          <SearchX
+            className="size-8 text-muted-foreground"
+            aria-hidden="true"
+          />
           <p className="text-sm font-semibold text-card-foreground">
-            No matches found
+            {copy.noMatches}
           </p>
           <p className="text-xs text-muted-foreground">
-            Try a different item, brand, or price range.
+            {copy.tryDifferentSearch}
           </p>
         </div>
       ) : (
