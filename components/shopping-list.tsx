@@ -4,11 +4,14 @@ import { Minus, Plus, ShoppingBasket, Trash2, X } from 'lucide-react'
 import { useMemo } from 'react'
 import { CATEGORY_COLOR } from '@/lib/products'
 import type { CartItem, Category } from '@/lib/types'
+import { localizeCategory, localizeProductName } from '@/lib/product-translations'
+import type { CartItem, Category, Language } from '@/lib/types'
 
 interface ShoppingListProps {
   cart: CartItem[]
   total: number
   hydrated: boolean
+  language: Language
   onIncrement: (id: string, qty: number) => void
   onRemove: (name: string) => void
   onClear: () => void
@@ -93,6 +96,7 @@ export function ShoppingList({
   cart,
   total,
   hydrated,
+  language,
   onIncrement,
   onRemove,
   onClear,
@@ -159,7 +163,7 @@ export function ShoppingList({
       ) : (
         <div className="space-y-4">
           {grouped.map(([category, items]) => (
-            <div key={category}>
+            <div key={localizeCategory(category, language)}>
               <div className="mb-1.5 flex items-center gap-2">
                 <span
                   className="size-2 rounded-full"
@@ -167,7 +171,7 @@ export function ShoppingList({
                   aria-hidden="true"
                 />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                  {category}
+                  {localizeCategory(category, language)}
                 </h3>
               </div>
 
@@ -180,7 +184,7 @@ export function ShoppingList({
                     <div className="relative size-9 shrink-0 overflow-hidden rounded-full bg-secondary">
                       <img
                         src={getImageUrl(item.name)}
-                        alt={item.name}
+                        alt={localizeProductName(item.name, language)}
                         width={36}
                         height={36}
                         className="size-9 object-cover"
@@ -202,7 +206,7 @@ export function ShoppingList({
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-card-foreground">{item.name}</p>
+                      <p className="truncate text-sm font-semibold text-card-foreground">{localizeProductName(item.name, language)}</p>
                       <p className="text-xs text-muted-foreground">
                         {item.price > 0
                           ? `${toRupees(item.price)} / ${item.unit}`
@@ -214,7 +218,7 @@ export function ShoppingList({
                       <button
                         type="button"
                         onClick={() => onIncrement(item.id, item.quantity - 1)}
-                        aria-label={`Decrease ${item.name}`}
+                        aria-label={`Decrease ${localizeProductName(item.name, language)}`}
                         className="flex size-6 items-center justify-center rounded-full text-secondary-foreground transition-colors hover:bg-card"
                       >
                         <Minus className="size-3.5" aria-hidden="true" />
@@ -227,7 +231,7 @@ export function ShoppingList({
                       <button
                         type="button"
                         onClick={() => onIncrement(item.id, item.quantity + 1)}
-                        aria-label={`Increase ${item.name}`}
+                        aria-label={`Increase ${localizeProductName(item.name, language)}`}
                         className="flex size-6 items-center justify-center rounded-full text-secondary-foreground transition-colors hover:bg-card"
                       >
                         <Plus className="size-3.5" aria-hidden="true" />
@@ -237,7 +241,7 @@ export function ShoppingList({
                     <button
                       type="button"
                       onClick={() => onRemove(item.name)}
-                      aria-label={`Remove ${item.name}`}
+ari                   aria-label={`Remove ${item.name}`}
                       className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     >
                       <X className="size-4" aria-hidden="true" />
