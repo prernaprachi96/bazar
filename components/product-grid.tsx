@@ -9,6 +9,7 @@ interface ProductGridProps {
   products: Product[]
   onAdd: (name: string) => void
   emptyMessage?: string
+  language: Language
 }
 
 export function ProductGrid({ title, subtitle, products, onAdd, emptyMessage }: ProductGridProps) {
@@ -25,7 +26,11 @@ export function ProductGrid({ title, subtitle, products, onAdd, emptyMessage }: 
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} onAdd={onAdd} />
+            <ProductCard
+              product={product}
+              language={language}
+              onAdd={onAdd}
+            />
           ))}
         </div>
       )}
