@@ -1,14 +1,21 @@
 'use client'
 
 import { CATEGORY_COLOR, CATEGORIES } from '@/lib/products'
-import type { Category } from '@/lib/types'
+import type { Category, Language } from '@/lib/types'
+import { localizeCategory } from '@/lib/product-translations'
+import { ui } from '@/lib/ui-translations'
 
 interface CategoryRailProps {
   active: Category | 'All'
+  language: Language
   onSelect: (category: Category | 'All') => void
 }
 
-export function CategoryRail({ active, onSelect }: CategoryRailProps) {
+export function CategoryRail({
+  active,
+  language,
+  onSelect,
+}: CategoryRailProps) {
   const items: (Category | 'All')[] = ['All', ...CATEGORIES]
 
   return (
@@ -16,6 +23,7 @@ export function CategoryRail({ active, onSelect }: CategoryRailProps) {
       {items.map((item) => {
         const isActive = item === active
         const color = item === 'All' ? undefined : CATEGORY_COLOR[item]
+
         return (
           <button
             key={item}
@@ -28,7 +36,7 @@ export function CategoryRail({ active, onSelect }: CategoryRailProps) {
             }`}
             style={!isActive && color ? { borderColor: color } : undefined}
           >
-            {item}
+            {item === 'All' ? ui(language).all : localizeCategory(item, language)}
           </button>
         )
       })}
