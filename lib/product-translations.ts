@@ -1,11 +1,161 @@
-export type Translation = {
-  'hi-IN': string
-  'es-ES': string
-  'fr-FR': string
-  'de-DE': string
-  'ja-JP': string
-  'ar-SA': string
-  'pt-BR': string
+import type { Category, Language } from '@/lib/types'
+
+type Translation = Partial<Record<Language, string>>
+
+const UNIT_TRANSLATIONS: Record<string, Translation> = {
+  gallon: {
+    'hi-IN': 'गैलन',
+    'es-ES': 'galón',
+    'fr-FR': 'gallon',
+    'de-DE': 'Gallone',
+    'ja-JP': 'ガロン',
+    'ar-SA': 'غالون',
+    'pt-BR': 'galão',
+  },
+  carton: {
+    'hi-IN': 'कार्टन',
+    'es-ES': 'cartón',
+    'fr-FR': 'carton',
+    'de-DE': 'Karton',
+    'ja-JP': 'パック',
+    'ar-SA': 'عبوة',
+    'pt-BR': 'caixa',
+  },
+  stick: {
+    'hi-IN': 'स्टिक',
+    'es-ES': 'barra',
+    'fr-FR': 'bâton',
+    'de-DE': 'Stück',
+    'ja-JP': '本',
+    'ar-SA': 'قطعة',
+    'pt-BR': 'tablete',
+  },
+  block: {
+    'hi-IN': 'ब्लॉक',
+    'es-ES': 'bloque',
+    'fr-FR': 'bloc',
+    'de-DE': 'Block',
+    'ja-JP': 'ブロック',
+    'ar-SA': 'قطعة',
+    'pt-BR': 'bloco',
+  },
+  tub: {
+    'hi-IN': 'डिब्बा',
+    'es-ES': 'tarrina',
+    'fr-FR': 'pot',
+    'de-DE': 'Becher',
+    'ja-JP': 'カップ',
+    'ar-SA': 'علبة',
+    'pt-BR': 'pote',
+  },
+  dozen: {
+    'hi-IN': 'दर्जन',
+    'es-ES': 'docena',
+    'fr-FR': 'douzaine',
+    'de-DE': 'Dutzend',
+    'ja-JP': 'ダース',
+    'ar-SA': 'دزينة',
+    'pt-BR': 'dúzia',
+  },
+  lb: {
+    'hi-IN': 'पाउंड',
+    'es-ES': 'lb',
+    'fr-FR': 'lb',
+    'de-DE': 'Pfund',
+    'ja-JP': 'ポンド',
+    'ar-SA': 'رطل',
+    'pt-BR': 'lb',
+  },
+  bunch: {
+    'hi-IN': 'गुच्छा',
+    'es-ES': 'racimo',
+    'fr-FR': 'bouquet',
+    'de-DE': 'Bund',
+    'ja-JP': '房',
+    'ar-SA': 'حزمة',
+    'pt-BR': 'cacho',
+  },
+  box: {
+    'hi-IN': 'डिब्बा',
+    'es-ES': 'caja',
+    'fr-FR': 'boîte',
+    'de-DE': 'Schachtel',
+    'ja-JP': '箱',
+    'ar-SA': 'صندوق',
+    'pt-BR': 'caixa',
+  },
+  bag: {
+    'hi-IN': 'बैग',
+    'es-ES': 'bolsa',
+    'fr-FR': 'sac',
+    'de-DE': 'Beutel',
+    'ja-JP': '袋',
+    'ar-SA': 'كيس',
+    'pt-BR': 'saco',
+  },
+  each: {
+    'hi-IN': 'प्रति पीस',
+    'es-ES': 'unidad',
+    'fr-FR': 'unité',
+    'de-DE': 'Stück',
+    'ja-JP': '個',
+    'ar-SA': 'قطعة',
+    'pt-BR': 'unidade',
+  },
+  loaf: {
+    'hi-IN': 'लोफ',
+    'es-ES': 'hogaza',
+    'fr-FR': 'pain',
+    'de-DE': 'Laib',
+    'ja-JP': '1斤',
+    'ar-SA': 'رغيف',
+    'pt-BR': 'pão',
+  },
+  pack: {
+    'hi-IN': 'पैक',
+    'es-ES': 'paquete',
+    'fr-FR': 'paquet',
+    'de-DE': 'Packung',
+    'ja-JP': 'パック',
+    'ar-SA': 'عبوة',
+    'pt-BR': 'pacote',
+  },
+  bottle: {
+    'hi-IN': 'बोतल',
+    'es-ES': 'botella',
+    'fr-FR': 'bouteille',
+    'de-DE': 'Flasche',
+    'ja-JP': 'ボトル',
+    'ar-SA': 'زجاجة',
+    'pt-BR': 'garrafa',
+  },
+  bar: {
+    'hi-IN': 'बार',
+    'es-ES': 'barra',
+    'fr-FR': 'barre',
+    'de-DE': 'Riegel',
+    'ja-JP': '本',
+    'ar-SA': 'قطعة',
+    'pt-BR': 'barra',
+  },
+  jar: {
+    'hi-IN': 'जार',
+    'es-ES': 'frasco',
+    'fr-FR': 'bocal',
+    'de-DE': 'Glas',
+    'ja-JP': '瓶',
+    'ar-SA': 'مرطبان',
+    'pt-BR': 'pote',
+  },
+  tube: {
+    'hi-IN': 'ट्यूब',
+    'es-ES': 'tubo',
+    'fr-FR': 'tube',
+    'de-DE': 'Tube',
+    'ja-JP': 'チューブ',
+    'ar-SA': 'أنبوب',
+    'pt-BR': 'tubo',
+  },
 }
 
 const PRODUCT_TRANSLATIONS: Record<string, Translation> = {
@@ -26,81 +176,22 @@ const PRODUCT_TRANSLATIONS: Record<string, Translation> = {
     'de-DE': 'Mandelmilch',
     'ja-JP': 'アーモンドミルク',
     'ar-SA': 'حليب اللوز',
-    'pt-BR': 'Leite de amêndoa',
+    'pt-BR': 'Leite de amêndoas',
   },
 
-  Butter: {
-    'hi-IN': 'मक्खन',
-    'es-ES': 'Mantequilla',
-    'fr-FR': 'Beurre',
-    'de-DE': 'Butter',
-    'ja-JP': 'バター',
-    'ar-SA': 'زبدة',
-    'pt-BR': 'Manteiga',
+  'Oat Milk': {
+    'hi-IN': 'जई का दूध',
+    'es-ES': 'Leche de avena',
+    'fr-FR': 'Lait d’avoine',
+    'de-DE': 'Hafermilch',
+    'ja-JP': 'オーツミルク',
+    'ar-SA': 'حليب الشوفان',
+    'pt-BR': 'Leite de aveia',
   },
 
-  Eggs: {
-    'hi-IN': 'अंडे',
-    'es-ES': 'Huevos',
-    'fr-FR': 'Œufs',
-    'de-DE': 'Eier',
-    'ja-JP': '卵',
-    'ar-SA': 'بيض',
-    'pt-BR': 'Ovos',
-  },
+  // Keep your existing PRODUCT_TRANSLATIONS entries here.
+  // The following entries are added to complete the catalog.
 
-  Apples: {
-    'hi-IN': 'सेब',
-    'es-ES': 'Manzanas',
-    'fr-FR': 'Pommes',
-    'de-DE': 'Äpfel',
-    'ja-JP': 'りんご',
-    'ar-SA': 'تفاح',
-    'pt-BR': 'Maçãs',
-  },
-
-  Bananas: {
-    'hi-IN': 'केले',
-    'es-ES': 'Plátanos',
-    'fr-FR': 'Bananes',
-    'de-DE': 'Bananen',
-    'ja-JP': 'バナナ',
-    'ar-SA': 'موز',
-    'pt-BR': 'Bananas',
-  },
-
-  Toothpaste: {
-    'hi-IN': 'टूथपेस्ट',
-    'es-ES': 'Pasta de dientes',
-    'fr-FR': 'Dentifrice',
-    'de-DE': 'Zahnpasta',
-    'ja-JP': '歯磨き粉',
-    'ar-SA': 'معجون أسنان',
-    'pt-BR': 'Pasta de dente',
-  },
-
-  Shampoo: {
-    'hi-IN': 'शैम्पू',
-    'es-ES': 'Champú',
-    'fr-FR': 'Shampooing',
-    'de-DE': 'Shampoo',
-    'ja-JP': 'シャンプー',
-    'ar-SA': 'شامبو',
-    'pt-BR': 'Shampoo',
-  },
-
-  Soap: {
-    'hi-IN': 'साबुन',
-    'es-ES': 'Jabón',
-    'fr-FR': 'Savon',
-    'de-DE': 'Seife',
-    'ja-JP': '石鹸',
-    'ar-SA': 'صابون',
-    'pt-BR': 'Sabonete',
-  },
-
-  // Keep this catalog complete: every seed in lib/products.ts has a label in
-  // every supported locale, so switching language never falls back to English.
   'Soy Milk': {
     'hi-IN': 'सोया दूध',
     'es-ES': 'Leche de soja',
@@ -542,4 +633,117 @@ const CATEGORY_TRANSLATIONS: Record<Category, Translation> = {
     'ar-SA': 'مخبوزات',
     'pt-BR': 'Padaria',
   },
+
+  Pantry: {
+    'hi-IN': 'पेंट्री',
+    'es-ES': 'Despensa',
+    'fr-FR': 'Garde-manger',
+    'de-DE': 'Vorratskammer',
+    'ja-JP': 'パントリー',
+    'ar-SA': 'مؤن',
+    'pt-BR': 'Despensa',
+  },
+
+  Snacks: {
+    'hi-IN': 'स्नैक्स',
+    'es-ES': 'Aperitivos',
+    'fr-FR': 'Snacks',
+    'de-DE': 'Snacks',
+    'ja-JP': 'スナック',
+    'ar-SA': 'وجبات خفيفة',
+    'pt-BR': 'Lanches',
+  },
+
+  Beverages: {
+    'hi-IN': 'पेय पदार्थ',
+    'es-ES': 'Bebidas',
+    'fr-FR': 'Boissons',
+    'de-DE': 'Getränke',
+    'ja-JP': '飲料',
+    'ar-SA': 'مشروبات',
+    'pt-BR': 'Bebidas',
+  },
+
+  Meat: {
+    'hi-IN': 'मांस',
+    'es-ES': 'Carne',
+    'fr-FR': 'Viande',
+    'de-DE': 'Fleisch',
+    'ja-JP': '肉',
+    'ar-SA': 'لحوم',
+    'pt-BR': 'Carnes',
+  },
+
+  Frozen: {
+    'hi-IN': 'जमे हुए खाद्य',
+    'es-ES': 'Congelados',
+    'fr-FR': 'Surgelés',
+    'de-DE': 'Tiefkühlkost',
+    'ja-JP': '冷凍食品',
+    'ar-SA': 'مجمدات',
+    'pt-BR': 'Congelados',
+  },
+
+  Household: {
+    'hi-IN': 'घरेलू सामान',
+    'es-ES': 'Hogar',
+    'fr-FR': 'Maison',
+    'de-DE': 'Haushalt',
+    'ja-JP': '家庭用品',
+    'ar-SA': 'مستلزمات منزلية',
+    'pt-BR': 'Casa',
+  },
+}
+
+export function localizeProductName(
+  canonicalEnglishName: string,
+  language: Language,
+) {
+  if (language === 'en-US') {
+    return canonicalEnglishName
+  }
+
+  return (
+    PRODUCT_TRANSLATIONS[canonicalEnglishName]?.[language] ??
+    canonicalEnglishName
+  )
+}
+
+export function localizeCategory(
+  category: Category,
+  language: Language,
+) {
+  if (language === 'en-US') {
+    return category
+  }
+
+  return CATEGORY_TRANSLATIONS[category]?.[language] ?? category
+}
+
+export function localizeProductUnit(unit: string, language: Language) {
+  return language === 'en-US'
+    ? unit
+    : UNIT_TRANSLATIONS[unit]?.[language] ?? unit
+}
+
+export function getCanonicalProductName(
+  productName: string,
+  language: Language,
+) {
+  const query = productName.trim().toLocaleLowerCase()
+
+  for (const [englishName, translations] of Object.entries(
+    PRODUCT_TRANSLATIONS,
+  )) {
+    const translatedName = translations[language]
+
+    if (
+      englishName.toLocaleLowerCase() === query ||
+      translatedName?.toLocaleLowerCase() === query
+    ) {
+      return englishName
+    }
+  }
+
+  return productName
 }
