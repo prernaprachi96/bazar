@@ -1,0 +1,43 @@
+[
+  {
+    "id": "BZR-MT72C6SC-FA63",
+    "userEmail": "prachiprerna1@gmail.com",
+    "items": [
+      {
+        "id": "milk-greenleaf-1",
+        "name": "Milk",
+        "category": "Dairy",
+        "brand": "GreenLeaf",
+        "price": 3.29,
+        "unit": "gallon",
+        "quantity": 1,
+        "addedAt": 1787565206403
+      },
+      {
+        "id": "soy-milk-valuemart-9",
+        "name": "Soy Milk",
+        "category": "Dairy",
+        "brand": "ValueMart",
+        "price": 3.19,
+        "unit": "carton",
+        "quantity": 3,
+        "addedAt": 1787565467280
+      }
+    ],
+    "subtotal": 12.86,
+    "deliveryFee": 4.99,
+    "total": 17.85,
+    "address": {
+      "fullName": "Prerna Prachi",
+      "phone": "9946",
+      "line1": "pwqond",
+      "city": "dkna",
+      "state": "nkdl",
+      "pincode": "8466"
+    },
+    "paymentMethod": "upi",
+    "slot": "Today, 6–8 PM",
+    "placedAt": 1787565488990,
+    "status": "delivered"
+  }
+]

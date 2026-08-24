@@ -65,10 +65,30 @@ export function useShoppingStore() {
   const addItem = useCallback(
     (name: string, quantity = 1): CommandResult => {
       const product = findProductByName(name)
-      const displayName = product ? product.name : titleCase(name)
-      const category = product ? product.category : categoryForName(name)
-      const price = product ? product.price : 0
-      const unit = product ? product.unit : 'each'
+
+      // ── CHANGED: reject items not found in the catalog ──
+      if (!product) {
+        return {
+          intent: 'ADD_ITEM',
+          reply: `Sorry, "${name}" is not available on BAZAR. Try searching for something else.`,
+          toast: { type: 'error', message: `"${name}" not found in BAZAR` },
+        }
+      }
+
+      // ── CHANGED: reject out-of-stock items instead of adding them ──
+      if (product.outOfStock) {
+        return {
+          intent: 'ADD_ITEM',
+          reply: `${product.name} is out of stock right now. Here are some alternatives you could try instead.`,
+          products: findSubstitutes(product.name),
+          toast: { type: 'info', message: `${product.name} is out of stock` },
+        }
+      }
+
+      const displayName = product.name
+      const category = product.category
+      const price = product.price
+      const unit = product.unit
 
       const prev = cartRef.current
       const idx = prev.findIndex((i) => i.name.toLowerCase() === displayName.toLowerCase())
@@ -82,25 +102,16 @@ export function useShoppingStore() {
         commit([
           ...prev,
           {
-            id: product?.id ?? `custom-${displayName.toLowerCase()}-${Date.now()}`,
+            id: product.id,
             name: displayName,
             category,
-            brand: product?.brand ?? 'Generic',
+            brand: product.brand,
             price,
             unit,
             quantity,
             addedAt: Date.now(),
           },
         ])
-      }
-
-      if (product?.outOfStock) {
-        return {
-          intent: 'ADD_ITEM',
-          reply: `${displayName} is out of stock right now. Here are some alternatives you could try instead.`,
-          products: findSubstitutes(displayName),
-          toast: { type: 'info', message: `${displayName} is out of stock` },
-        }
       }
 
       const qtyLabel = quantity > 1 ? `${quantity} × ` : ''

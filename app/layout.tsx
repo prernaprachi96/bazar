@@ -16,7 +16,8 @@ const quicksand = Quicksand({
 })
 
 export const metadata: Metadata = {
-  title: 'Petal — Voice Command Shopping Assistant',
+  // ── CHANGED: app name updated from "Petal" to "BAZAR" ──
+  title: 'BAZAR — Voice Command Shopping Assistant',
   description:
     'A voice-powered shopping list manager with smart suggestions, natural language commands, and multilingual support.',
   generator: 'v0.app',

@@ -4,6 +4,13 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // ── CHANGED: allow Unsplash images for product photos ──
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'source.unsplash.com',
+      },
+    ],
     unoptimized: true,
   },
 }

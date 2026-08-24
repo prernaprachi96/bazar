@@ -36,7 +36,7 @@ function nextId() {
 const WELCOME: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
-  text: 'Hi! I\'m Petal. Tap the mic or type to manage your shopping list. Try "Add 2 milk" or "Find snacks under $4".',
+  text: 'Hi! I\'m BAZAR. Tap the mic or type to manage your shopping list. Try "Add 2 milk" or "Find snacks under $4".',
 }
 
 export function AssistantApp() {
@@ -214,7 +214,7 @@ export function AssistantApp() {
             <Flower2 className="size-5" aria-hidden="true" />
           </span>
           <div className="hidden shrink-0 sm:block">
-            <h1 className="font-display text-lg font-bold tracking-tight text-foreground">Petal</h1>
+            <h1 className="font-display text-lg font-bold tracking-tight text-foreground">BAZAR</h1>
             <p className="text-[11px] text-muted-foreground">Voice shopping assistant</p>
           </div>
 
@@ -281,7 +281,7 @@ export function AssistantApp() {
         type="button"
         onClick={() => setChatOpen(true)}
         className="fixed bottom-5 right-5 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40"
-        aria-label="Open Petal assistant chat"
+        aria-label="Open BAZAR assistant chat"
       >
         <MessageCircle className="size-6" aria-hidden="true" />
       </button>
@@ -290,7 +290,7 @@ export function AssistantApp() {
         <div className="fixed inset-0 z-40 flex justify-end bg-foreground/20 backdrop-blur-sm" role="dialog" aria-label="Assistant chat">
           <div className="flex h-dvh w-full max-w-md flex-col bg-background p-4 shadow-2xl sm:p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-display text-base font-bold text-foreground">Petal Assistant</h2>
+              <h2 className="font-display text-base font-bold text-foreground">BAZAR Assistant</h2>
               <button
                 type="button"
                 onClick={() => setChatOpen(false)}
