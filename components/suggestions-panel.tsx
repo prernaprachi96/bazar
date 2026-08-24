@@ -85,7 +85,7 @@ function SuggestionRow({
             className="group flex w-28 shrink-0 snap-start flex-col gap-1 rounded-2xl border border-border bg-background/50 p-3 text-left transition-colors hover:border-primary"
           >
             <span className="truncate text-sm font-bold text-card-foreground">{p.name}</span>
-            <span className="text-xs text-muted-foreground">${p.price.toFixed(2)}</span>
+            <span className="text-xs text-muted-foreground">₹{(p.price * 83).toFixed(0)}</span>
             <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary">
               <Plus className="size-3" aria-hidden="true" /> Add
             </span>
