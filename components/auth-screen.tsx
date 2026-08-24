@@ -1,6 +1,6 @@
 'use client'
 
-import { Flower2, Lock, Mail, User as UserIcon } from 'lucide-react'
+import { Lock, Mail, ShoppingBag, User as UserIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '@/components/auth-provider'
 import { Button } from '@/components/ui/button'
@@ -27,10 +27,11 @@ export function AuthScreen() {
     <main className="flex min-h-dvh w-full items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm rounded-3xl border border-border bg-card p-6 shadow-sm shadow-primary/10 sm:p-8">
         <div className="mb-6 flex flex-col items-center text-center">
+          {/* CHANGED: Flower2 → ShoppingBag, "Petal" → "BAZAR" */}
           <span className="mb-3 flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm shadow-primary/30">
-            <Flower2 className="size-6" aria-hidden="true" />
+            <ShoppingBag className="size-6" aria-hidden="true" />
           </span>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Petal</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">BAZAR</h1>
           <p className="text-sm text-muted-foreground">
             {mode === 'login' ? 'Log in to your shopping assistant' : 'Create your account'}
           </p>

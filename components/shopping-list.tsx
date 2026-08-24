@@ -1,6 +1,7 @@
 'use client'
 
 import { Minus, Plus, ShoppingBasket, Trash2, X } from 'lucide-react'
+import Image from 'next/image'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { CATEGORY_COLOR } from '@/lib/products'
@@ -13,6 +14,17 @@ interface ShoppingListProps {
   onIncrement: (id: string, qty: number) => void
   onRemove: (name: string) => void
   onClear: () => void
+}
+
+// CHANGED: ₹ symbol + 83x conversion rate (1 USD ≈ 83 INR)
+const USD_TO_INR = 83
+function toRupees(usd: number) {
+  return `₹${(usd * USD_TO_INR).toFixed(0)}`
+}
+
+// CHANGED: Unsplash image per item name
+function getImageUrl(name: string) {
+  return `https://source.unsplash.com/40x40/?${encodeURIComponent(name.toLowerCase())},food,grocery`
 }
 
 export function ShoppingList({ cart, total, hydrated, onIncrement, onRemove, onClear }: ShoppingListProps) {
@@ -85,10 +97,23 @@ export function ShoppingList({ cart, total, hydrated, onIncrement, onRemove, onC
                     key={item.id}
                     className="flex items-center gap-2 rounded-2xl border border-border bg-background/50 p-2.5"
                   >
+                    {/* CHANGED: item image added */}
+                    <div className="relative shrink-0 size-9 rounded-full overflow-hidden bg-secondary">
+                      <Image
+                        src={getImageUrl(item.name)}
+                        alt={item.name}
+                        width={36}
+                        height={36}
+                        className="object-cover w-full h-full"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
+                    </div>
+
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-card-foreground">{item.name}</p>
+                      {/* CHANGED: $ → ₹ */}
                       <p className="text-xs text-muted-foreground">
-                        {item.price > 0 ? `$${item.price.toFixed(2)} / ${item.unit}` : `per ${item.unit}`}
+                        {item.price > 0 ? `${toRupees(item.price)} / ${item.unit}` : `per ${item.unit}`}
                       </p>
                     </div>
                     <div className="flex items-center gap-1 rounded-full bg-secondary p-0.5">
@@ -124,9 +149,10 @@ export function ShoppingList({ cart, total, hydrated, onIncrement, onRemove, onC
             </div>
           ))}
 
+          {/* CHANGED: $ → ₹ on total */}
           <div className="flex items-center justify-between border-t border-border pt-3">
             <span className="text-sm font-semibold text-muted-foreground">Estimated total</span>
-            <span className="font-display text-lg font-bold text-card-foreground">${total.toFixed(2)}</span>
+            <span className="font-display text-lg font-bold text-card-foreground">{toRupees(total)}</span>
           </div>
         </div>
       )}
