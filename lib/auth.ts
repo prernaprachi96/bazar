@@ -13,6 +13,7 @@ export function getSession(): User | null {
 
   try {
     const raw = window.localStorage.getItem(SESSION_KEY)
+
     if (!raw) return null
 
     const session = JSON.parse(raw) as
@@ -52,7 +53,9 @@ async function postJson(
   try {
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
     })
 
@@ -60,24 +63,25 @@ async function postJson(
 
     if (!res.ok) {
       return {
-        error:
-          data.error ?? 'Something went wrong. Please try again.',
+        error: data.error ?? 'Something went wrong. Please try again.',
       }
     }
 
-    return { user: data.user as User }
+    return {
+      user: data.user as User,
+    }
   } catch {
     return {
-      error:
-        'Could not reach the server. Check your connection and try again.',
+      error: 'Could not reach the server. Check your connection and try again.',
     }
   }
 }
 
-// Signup/login are backed by a real server-side user record (see
-// lib/server/user-db.ts) — passwords are hashed there and never touch
-// localStorage. Only the logged-in-user's public profile is cached here so
-// the app can restore the session on refresh without another round trip.
+// Signup/login are backed by a real server-side user record
+// (see lib/server/user-db.ts) — passwords are hashed there and
+// never touch localStorage. Only the logged-in-user's public
+// profile is cached here so the app can restore the session on
+// refresh without another round trip.
 export async function signUp(
   name: string,
   email: string,
