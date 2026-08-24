@@ -15,6 +15,7 @@ import { ShoppingList } from '@/components/shopping-list'
 import { SuggestionsPanel } from '@/components/suggestions-panel'
 import { useToast } from '@/components/toast'
 import { VoiceSearchBar } from '@/components/voice-search-bar'
+import { VoiceCommandCenter } from '@/components/voice-command-center'
 import { useSpeechRecognition } from '@/hooks/use-speech-recognition'
 import { type CommandResult, useShoppingStore } from '@/hooks/use-shopping-store'
 import { PRODUCTS } from '@/lib/products'
@@ -255,7 +256,17 @@ export function AssistantApp() {
       </header>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6">
-        <CategoryRail active={activeCategory} onSelect={setActiveCategory} />
+        <VoiceCommandCenter
+          listening={speech.listening}
+          transcript={speech.transcript}
+          processing={processing}
+          itemCount={itemCount}
+          onCommand={(command) => void runCommand(command)}
+          onMicToggle={handleMicToggle}
+          micSupported={speech.supported}
+      />
+
+      <CategoryRail active={activeCategory} onSelect={setActiveCategory} />
 
         {search ? (
           <SearchResults
