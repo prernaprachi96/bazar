@@ -1,22 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Nunito, Quicksand } from 'next/font/google'
 import './globals.css'
 
-const nunito = Nunito({
-  subsets: ['latin'],
-  variable: '--font-nunito',
-  display: 'swap',
-})
-
-const quicksand = Quicksand({
-  subsets: ['latin'],
-  variable: '--font-quicksand',
-  display: 'swap',
-})
-
 export const metadata: Metadata = {
-  // ── CHANGED: app name updated from "Petal" to "BAZAR" ──
   title: 'BAZAR — Voice Command Shopping Assistant',
   description:
     'A voice-powered shopping list manager with smart suggestions, natural language commands, and multilingual support.',
@@ -35,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`bg-background ${nunito.variable} ${quicksand.variable}`}>
+    <html lang="en" className="bg-background">
       <body className="font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
