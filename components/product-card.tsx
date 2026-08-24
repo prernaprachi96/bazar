@@ -4,9 +4,12 @@ import { Plus, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CATEGORY_COLOR } from '@/lib/products'
 import type { Product } from '@/lib/types'
+import { localizeCategory, localizeProductName } from '@/lib/product-translations'
+import type { Language } from '@/lib/types'
 
 interface ProductCardProps {
   product: Product
+  language: Language
   onAdd: (name: string) => void
 }
 
@@ -82,7 +85,14 @@ function getImageUrl(name: string): string {
   return PRODUCT_IMAGES[name] ?? `https://images.unsplash.com/photo-1542838132-92c53300491e?w=80&h=80&fit=crop&auto=format`
 }
 
-export function ProductCard({ product, onAdd }: ProductCardProps) {
+export function ProductCard({
+  product,
+  language,
+  onAdd,
+}: ProductCardProps) {
+  const productName = localizeProductName(product.name, language)
+  const categoryName = localizeCategory(product.category, language)
+  
   return (
     <div
       className={`flex items-center gap-3 rounded-2xl border border-border bg-card p-3 ${
@@ -93,7 +103,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
       <div className="relative shrink-0 size-10 rounded-full overflow-hidden bg-secondary">
         <img
           src={getImageUrl(product.name)}
-          alt={product.name}
+          alt={productName}
           width={40}
           height={40}
           className="size-10 rounded-full object-cover"
@@ -117,7 +127,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
       {/* Name + badges */}
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="truncate font-semibold text-card-foreground">{product.name}</p>
+          <p className="truncate font-semibold text-card-foreground">{productName}</p>
 
           {product.outOfStock && (
             <span className="inline-flex items-center rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-destructive">
@@ -132,7 +142,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
           )}
         </div>
         <p className="truncate text-xs text-muted-foreground">
-          {product.brand} · {product.category} · per {product.unit}
+          {product.brand} · {categoryName} · {product.unit}
         </p>
       </div>
 
@@ -146,7 +156,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
           className="h-7 rounded-full px-3 text-xs"
           onClick={() => onAdd(product.name)}
           disabled={product.outOfStock}
-          aria-label={product.outOfStock ? `${product.name} is out of stock` : `Add ${product.name} to list`}
+          aria-label={product.outOfStock ? `${productName} is out of stock` : `Add ${productName} to list`}
         >
           <Plus className="size-3.5" aria-hidden="true" />
           {product.outOfStock ? 'Unavailable' : 'Add'}
