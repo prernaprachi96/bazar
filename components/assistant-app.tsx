@@ -83,7 +83,6 @@ export function AssistantApp() {
   const runCommand = useCallback(
     async (rawText: string) => {
       const text = rawText.trim()
-
       if (!text || processingRef.current) return
 
       processingRef.current = true
@@ -103,7 +102,7 @@ export function AssistantApp() {
             language,
           )
 
-          result = store.addToList(
+          result = store.addItem(
             canonicalName,
             parsed.quantity ?? 1,
           )
@@ -116,24 +115,33 @@ export function AssistantApp() {
             language,
           )
 
-          result = store.removeFromList(canonicalName)
+          result = store.removeItem(canonicalName)
           break
         }
 
         case 'CLEAR_LIST':
-          result = store.clearList()
+          result = store.clearCart()
+          break
+
+        case 'SHOW_LIST':
+          result = {
+            success: true,
+            message: '',
+          }
+          setCartOpen(true)
           break
 
         case 'SEARCH': {
-          const query = parsed.query ?? text
-
+          const query = parsed.query ?? ''
           setSearch({
             query,
             results: [],
             loading: true,
           })
 
-          const results = getSuggestions(query, PRODUCTS)
+          await new Promise((r) => setTimeout(r, 250))
+
+          const results = store.searchProducts(query)
 
           setSearch({
             query,
@@ -143,93 +151,37 @@ export function AssistantApp() {
 
           result = {
             success: true,
-            message:
-              results.length > 0
-                ? `I found ${results.length} products for "${query}".`
-                : `I couldn't find products for "${query}".`,
+            message: '',
           }
-
           break
         }
-
-        case 'ADD_PRODUCT': {
-          const product = PRODUCTS.find(
-            (p) =>
-              p.id === parsed.productId ||
-              p.name.toLowerCase() === parsed.item?.toLowerCase(),
-          )
-
-          if (!product) {
-            result = {
-              success: false,
-              message: 'I could not find that product.',
-            }
-            break
-          }
-
-          result = store.addToCart(product, parsed.quantity ?? 1)
-          break
-        }
-
-        case 'REMOVE_PRODUCT': {
-          const product = PRODUCTS.find(
-            (p) =>
-              p.id === parsed.productId ||
-              p.name.toLowerCase() === parsed.item?.toLowerCase(),
-          )
-
-          if (!product) {
-            result = {
-              success: false,
-              message: 'I could not find that product.',
-            }
-            break
-          }
-
-          result = store.removeFromCart(product.id)
-          break
-        }
-
-        case 'VIEW_CART':
-          setCartOpen(true)
-          result = {
-            success: true,
-            message: 'Here is your cart.',
-          }
-          break
 
         case 'CHECKOUT':
           setCheckoutOpen(true)
           result = {
             success: true,
-            message: 'Opening checkout.',
+            message: '',
           }
           break
 
         default:
           result = {
             success: false,
-            message:
-              'I can help you add items, remove items, search products, or manage your cart.',
+            message: 'I didn\'t understand that command.',
           }
       }
 
-      pushMessage({
-        role: 'assistant',
-        text: result.message,
-      })
-
-      if (result.success) {
-        notify({
-          title: 'BAZAR',
-          description: result.message,
+      if (result.message) {
+        pushMessage({
+          role: 'assistant',
+          text: result.message,
         })
       }
 
       setProcessing(false)
       processingRef.current = false
     },
-    [language, notify, pushMessage, store],
+    [language, pushMessage, store],
   )
 
   const handleSubmit = useCallback(() => {
@@ -244,27 +196,22 @@ export function AssistantApp() {
   })
 
   const handleMicToggle = useCallback(() => {
-    if (speech.listening) {
-      speech.stop()
-    } else {
-      speech.start()
-    }
+    speech.toggle()
   }, [speech])
 
   const handleAddProduct = useCallback(
-    (product: Product, quantity = 1) => {
-      const result = store.addToCart(product, quantity)
+    (name: string) => {
+      const result = store.addItem(name, 1)
 
-      pushMessage({
-        role: 'assistant',
-        text: result.message,
-      })
+      if (result.message) {
+        pushMessage({
+          role: result.success ? 'assistant' : 'assistant',
+          text: result.message,
+        })
+      }
 
       if (result.success) {
-        notify({
-          title: 'Added to cart',
-          description: result.message,
-        })
+        notify(result.message)
       }
     },
     [notify, pushMessage, store],
@@ -438,7 +385,6 @@ export function AssistantApp() {
               onInputChange={setInputText}
               onSubmit={handleSubmit}
               processing={processing}
-              language={language}
             />
           </div>
         </div>
@@ -446,36 +392,40 @@ export function AssistantApp() {
 
       {cartOpen && (
         <ShoppingList
-          items={store.cart}
+          cart={store.cart}
           onClose={() => setCartOpen(false)}
           onCheckout={() => {
             setCartOpen(false)
             setCheckoutOpen(true)
           }}
-          onRemove={(productId) => store.removeFromCart(productId)}
-          onUpdateQuantity={(productId, quantity) =>
-            store.updateCartQuantity(productId, quantity)
-          }
-          language={language}
+          onRemove={(name) => {
+            const result = store.removeItem(name)
+
+            if (result.message) {
+              pushMessage({
+                role: 'assistant',
+                text: result.message,
+              })
+            }
+          }}
         />
       )}
 
       {checkoutOpen && (
         <CheckoutFlow
           cart={store.cart}
+          user={user}
           onClose={() => setCheckoutOpen(false)}
           onComplete={() => {
             store.clearCart()
             setCheckoutOpen(false)
           }}
-          language={language}
         />
       )}
 
       {ordersOpen && (
         <OrderHistory
           onClose={() => setOrdersOpen(false)}
-          language={language}
         />
       )}
     </main>
