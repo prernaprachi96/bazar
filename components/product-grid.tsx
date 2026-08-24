@@ -2,6 +2,7 @@
 
 import { ProductCard } from '@/components/product-card'
 import type { Language, Product } from '@/lib/types'
+import { ui } from '@/lib/ui-translations'
 
 interface ProductGridProps {
   title: string
@@ -23,7 +24,9 @@ export function ProductGrid({
   return (
     <section aria-label={title} className="flex flex-col gap-3">
       <div>
-        <h2 className="font-display text-lg font-bold text-foreground">{title}</h2>
+        <h2 className="font-display text-lg font-bold text-foreground">
+          {title}
+        </h2>
 
         {subtitle && (
           <p className="text-xs text-muted-foreground">{subtitle}</p>
@@ -32,7 +35,7 @@ export function ProductGrid({
 
       {products.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border bg-card px-4 py-6 text-center text-sm text-muted-foreground">
-          {emptyMessage ?? 'No products found in this category yet.'}
+          {emptyMessage ?? ui(language).noProducts}
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
