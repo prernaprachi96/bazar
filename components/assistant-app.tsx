@@ -285,16 +285,22 @@ export function AssistantApp() {
             query={search.query}
             results={search.results}
             loading={search.loading}
+            language={language}
             onAdd={handleAddProduct}
             onClose={() => setSearch(null)}
           />
         ) : (
           <ProductGrid
             title={activeCategory === 'All' ? 'Popular picks' : activeCategory}
-            subtitle={activeCategory === 'All' ? 'Fresh picks across every category' : `${categoryProducts.length} items`}
+            subtitle={
+              activeCategory === 'All'
+                ? 'Fresh picks across every category'
+                : `${categoryProducts.length} items`
+            }
             products={categoryProducts}
+            language={language}
             onAdd={handleAddProduct}
-          />
+        />
         )}
 
         <SuggestionsPanel cart={store.cart} onAdd={handleAddProduct} />
@@ -327,6 +333,7 @@ export function AssistantApp() {
               <ChatPanel
                 messages={messages}
                 processing={processing}
+                language={language}
                 onAddProduct={handleAddProduct}
                 onExample={(t) => void runCommand(t)}
               />
