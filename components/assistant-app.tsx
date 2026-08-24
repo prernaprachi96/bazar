@@ -21,6 +21,7 @@ import { type CommandResult, useShoppingStore } from '@/hooks/use-shopping-store
 import { PRODUCTS } from '@/lib/products'
 import { getSuggestions } from '@/lib/suggestions'
 import type { CartItem, Category, ChatMessage, Language, Product } from '@/lib/types'
+import { getCanonicalProductName } from '@/lib/product-translations'
 
 interface SearchState {
   query: string
@@ -80,13 +81,23 @@ export function AssistantApp() {
 
       switch (parsed.intent) {
         case 'ADD_ITEM':
-          result = store.addItem(parsed.item ?? '', parsed.quantity ?? 1)
+          const canonicalName = getCanonicalProductName(
+            parsed.item ?? '',
+            language,
+          )
+
+          result = store.addItem(
+            canonicalName,
+            parsed.quantity ?? 1,
+          )
           setSearch(null)
           break
 
         case 'REMOVE_ITEM':
           result = parsed.item
-            ? store.removeItem(parsed.item)
+            ? store.removeItem(
+                getCanonicalProductName(parsed.item, language),
+                )
             : { intent: 'REMOVE_ITEM', reply: tr.removeWhich }
           break
 
@@ -342,6 +353,7 @@ export function AssistantApp() {
               cart={store.cart}
               total={store.total}
               hydrated={store.hydrated}
+              language={language}
               onIncrement={store.setQuantity}
               onRemove={handleRemove}
               onClear={handleClear}
