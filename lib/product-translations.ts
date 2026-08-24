@@ -1,8 +1,8 @@
 import type { Category, Language } from '@/lib/types'
 
-type ProductLanguageMap = Partial<Record<Language, string>>
+type Translation = Partial<Record<Language, string>>
 
-const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
+const PRODUCT_TRANSLATIONS: Record<string, Translation> = {
   Milk: {
     'hi-IN': 'दूध',
     'es-ES': 'Leche',
@@ -12,6 +12,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'حليب',
     'pt-BR': 'Leite',
   },
+
   'Almond Milk': {
     'hi-IN': 'बादाम दूध',
     'es-ES': 'Leche de almendras',
@@ -21,6 +22,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'حليب اللوز',
     'pt-BR': 'Leite de amêndoas',
   },
+
   'Oat Milk': {
     'hi-IN': 'जई का दूध',
     'es-ES': 'Leche de avena',
@@ -30,6 +32,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'حليب الشوفان',
     'pt-BR': 'Leite de aveia',
   },
+
   Butter: {
     'hi-IN': 'मक्खन',
     'es-ES': 'Mantequilla',
@@ -39,6 +42,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'زبدة',
     'pt-BR': 'Manteiga',
   },
+
   Eggs: {
     'hi-IN': 'अंडे',
     'es-ES': 'Huevos',
@@ -48,6 +52,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'بيض',
     'pt-BR': 'Ovos',
   },
+
   Apples: {
     'hi-IN': 'सेब',
     'es-ES': 'Manzanas',
@@ -57,6 +62,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'تفاح',
     'pt-BR': 'Maçãs',
   },
+
   Bananas: {
     'hi-IN': 'केले',
     'es-ES': 'Plátanos',
@@ -66,6 +72,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'موز',
     'pt-BR': 'Bananas',
   },
+
   Oranges: {
     'hi-IN': 'संतरे',
     'es-ES': 'Naranjas',
@@ -75,51 +82,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'برتقال',
     'pt-BR': 'Laranjas',
   },
-  Strawberries: {
-    'hi-IN': 'स्ट्रॉबेरी',
-    'es-ES': 'Fresas',
-    'fr-FR': 'Fraises',
-    'de-DE': 'Erdbeeren',
-    'ja-JP': 'いちご',
-    'ar-SA': 'فراولة',
-    'pt-BR': 'Morangos',
-  },
-  Spinach: {
-    'hi-IN': 'पालक',
-    'es-ES': 'Espinaca',
-    'fr-FR': 'Épinards',
-    'de-DE': 'Spinat',
-    'ja-JP': 'ほうれん草',
-    'ar-SA': 'سبانخ',
-    'pt-BR': 'Espinafre',
-  },
-  Tomatoes: {
-    'hi-IN': 'टमाटर',
-    'es-ES': 'Tomates',
-    'fr-FR': 'Tomates',
-    'de-DE': 'Tomaten',
-    'ja-JP': 'トマト',
-    'ar-SA': 'طماطم',
-    'pt-BR': 'Tomates',
-  },
-  Carrots: {
-    'hi-IN': 'गाजर',
-    'es-ES': 'Zanahorias',
-    'fr-FR': 'Carottes',
-    'de-DE': 'Karotten',
-    'ja-JP': 'にんじん',
-    'ar-SA': 'جزر',
-    'pt-BR': 'Cenouras',
-  },
-  Avocado: {
-    'hi-IN': 'एवोकाडो',
-    'es-ES': 'Aguacate',
-    'fr-FR': 'Avocat',
-    'de-DE': 'Avocado',
-    'ja-JP': 'アボカド',
-    'ar-SA': 'أفوكادو',
-    'pt-BR': 'Abacate',
-  },
+
   Bread: {
     'hi-IN': 'ब्रेड',
     'es-ES': 'Pan',
@@ -129,6 +92,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'خبز',
     'pt-BR': 'Pão',
   },
+
   Water: {
     'hi-IN': 'पानी',
     'es-ES': 'Agua',
@@ -138,6 +102,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'ماء',
     'pt-BR': 'Água',
   },
+
   Coffee: {
     'hi-IN': 'कॉफी',
     'es-ES': 'Café',
@@ -147,6 +112,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'قهوة',
     'pt-BR': 'Café',
   },
+
   Tea: {
     'hi-IN': 'चाय',
     'es-ES': 'Té',
@@ -156,6 +122,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'شاي',
     'pt-BR': 'Chá',
   },
+
   Rice: {
     'hi-IN': 'चावल',
     'es-ES': 'Arroz',
@@ -165,6 +132,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'أرز',
     'pt-BR': 'Arroz',
   },
+
   Pasta: {
     'hi-IN': 'पास्ता',
     'es-ES': 'Pasta',
@@ -174,6 +142,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'معكرونة',
     'pt-BR': 'Macarrão',
   },
+
   Toothpaste: {
     'hi-IN': 'टूथपेस्ट',
     'es-ES': 'Pasta de dientes',
@@ -183,15 +152,17 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
     'ar-SA': 'معجون أسنان',
     'pt-BR': 'Pasta de dente',
   },
+
   Shampoo: {
     'hi-IN': 'शैम्पू',
     'es-ES': 'Champú',
-    'fr-FR': 'Shampoing',
+    'fr-FR': 'Shampooing',
     'de-DE': 'Shampoo',
     'ja-JP': 'シャンプー',
     'ar-SA': 'شامبو',
     'pt-BR': 'Shampoo',
   },
+
   Soap: {
     'hi-IN': 'साबुन',
     'es-ES': 'Jabón',
@@ -203,7 +174,7 @@ const PRODUCT_TRANSLATIONS: Record<string, ProductLanguageMap> = {
   },
 }
 
-const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
+const CATEGORY_TRANSLATIONS: Record<Category, Translation> = {
   Dairy: {
     'hi-IN': 'डेयरी',
     'es-ES': 'Lácteos',
@@ -213,6 +184,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'منتجات الألبان',
     'pt-BR': 'Laticínios',
   },
+
   Produce: {
     'hi-IN': 'फल और सब्ज़ियां',
     'es-ES': 'Frutas y verduras',
@@ -222,6 +194,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'الفواكه والخضروات',
     'pt-BR': 'Hortifruti',
   },
+
   Bakery: {
     'hi-IN': 'बेकरी',
     'es-ES': 'Panadería',
@@ -231,6 +204,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'مخبوزات',
     'pt-BR': 'Padaria',
   },
+
   Beverages: {
     'hi-IN': 'पेय पदार्थ',
     'es-ES': 'Bebidas',
@@ -240,6 +214,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'مشروبات',
     'pt-BR': 'Bebidas',
   },
+
   Snacks: {
     'hi-IN': 'स्नैक्स',
     'es-ES': 'Aperitivos',
@@ -249,6 +224,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'وجبات خفيفة',
     'pt-BR': 'Lanches',
   },
+
   Household: {
     'hi-IN': 'घरेलू सामान',
     'es-ES': 'Hogar',
@@ -258,6 +234,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'مستلزمات المنزل',
     'pt-BR': 'Casa',
   },
+
   'Meat & Seafood': {
     'hi-IN': 'मांस और समुद्री भोजन',
     'es-ES': 'Carne y mariscos',
@@ -267,6 +244,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'اللحوم والمأكولات البحرية',
     'pt-BR': 'Carnes e frutos do mar',
   },
+
   Frozen: {
     'hi-IN': 'फ्रोज़न फूड',
     'es-ES': 'Congelados',
@@ -276,6 +254,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'أطعمة مجمدة',
     'pt-BR': 'Congelados',
   },
+
   Pantry: {
     'hi-IN': 'पेंट्री',
     'es-ES': 'Despensa',
@@ -285,6 +264,7 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
     'ar-SA': 'المؤن',
     'pt-BR': 'Despensa',
   },
+
   'Personal Care': {
     'hi-IN': 'व्यक्तिगत देखभाल',
     'es-ES': 'Cuidado personal',
@@ -296,33 +276,47 @@ const CATEGORY_TRANSLATIONS: Record<Category, ProductLanguageMap> = {
   },
 }
 
-export function localizeProductName(name: string, language: Language) {
-  if (language === 'en-US') return name
+export function localizeProductName(
+  canonicalEnglishName: string,
+  language: Language,
+) {
+  if (language === 'en-US') {
+    return canonicalEnglishName
+  }
 
-  return PRODUCT_TRANSLATIONS[name]?.[language] ?? name
+  return (
+    PRODUCT_TRANSLATIONS[canonicalEnglishName]?.[language] ??
+    canonicalEnglishName
+  )
 }
 
-export function localizeCategory(category: Category, language: Language) {
-  if (language === 'en-US') return category
+export function localizeCategory(
+  category: Category,
+  language: Language,
+) {
+  if (language === 'en-US') {
+    return category
+  }
 
   return CATEGORY_TRANSLATIONS[category]?.[language] ?? category
 }
 
 export function getCanonicalProductName(
-  spokenOrTypedName: string,
+  productName: string,
   language: Language,
 ) {
-  const query = spokenOrTypedName.trim().toLocaleLowerCase()
+  const query = productName.trim().toLocaleLowerCase()
 
   for (const [englishName, translations] of Object.entries(PRODUCT_TRANSLATIONS)) {
-    if (englishName.toLocaleLowerCase() === query) {
-      return englishName
-    }
+    const translatedName = translations[language]
 
-    if (translations[language]?.toLocaleLowerCase() === query) {
+    if (
+      englishName.toLocaleLowerCase() === query ||
+      translatedName?.toLocaleLowerCase() === query
+    ) {
       return englishName
     }
   }
 
-  return spokenOrTypedName
+  return productName
 }
