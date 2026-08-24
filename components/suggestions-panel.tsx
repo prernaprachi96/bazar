@@ -34,6 +34,7 @@ export function SuggestionsPanel({
         <span className="flex size-8 items-center justify-center rounded-full bg-primary/15 text-primary">
           <Bell className="size-4" aria-hidden="true" />
         </span>
+
         <h2 className="font-display text-sm font-bold text-card-foreground">
           {copy.smartSuggestions}
         </h2>
