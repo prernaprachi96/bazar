@@ -1,8 +1,8 @@
 'use client'
 
-import { t } from '@/lib/i18n'
+import { TRANSLATIONS, t } from '@/lib/i18n'
 import { MessageCircle, ShoppingBag, ShoppingBasket, X } from 'lucide-react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/components/auth-provider'
 import { ChatPanel } from '@/components/chat-panel'
 import { CheckoutFlow } from '@/components/checkout-flow'
@@ -21,7 +21,8 @@ import { type CommandResult, useShoppingStore } from '@/hooks/use-shopping-store
 import { PRODUCTS } from '@/lib/products'
 import { getSuggestions } from '@/lib/suggestions'
 import type { CartItem, Category, ChatMessage, Language, Product } from '@/lib/types'
-import { getCanonicalProductName } from '@/lib/product-translations'
+import { getCanonicalProductName, localizeCategory } from '@/lib/product-translations'
+import { ui } from '@/lib/ui-translations'
 
 interface SearchState {
   query: string
@@ -30,6 +31,7 @@ interface SearchState {
 }
 
 let messageSeq = 0
+
 function nextId() {
   messageSeq += 1
   return `m-${Date.now()}-${messageSeq}`
@@ -59,6 +61,20 @@ export function AssistantApp() {
   const processingRef = useRef(false)
 
   const tr = t(language)
+  const copy = ui(language)
+
+  useEffect(() => {
+    const savedLanguage = window.localStorage.getItem('bazar-language') as Language | null
+
+    if (savedLanguage && savedLanguage in TRANSLATIONS) {
+      setLanguage(savedLanguage)
+    }
+  }, [])
+
+  const handleLanguageChange = useCallback((nextLanguage: Language) => {
+    window.localStorage.setItem('bazar-language', nextLanguage)
+    setLanguage(nextLanguage)
+  }, [])
 
   const pushMessage = useCallback((msg: Omit<ChatMessage, 'id'>) => {
     setMessages((prev) => [...prev, { ...msg, id: nextId() }])
@@ -67,6 +83,7 @@ export function AssistantApp() {
   const runCommand = useCallback(
     async (rawText: string) => {
       const text = rawText.trim()
+
       if (!text || processingRef.current) return
 
       processingRef.current = true
@@ -80,135 +97,188 @@ export function AssistantApp() {
       let result: CommandResult
 
       switch (parsed.intent) {
-        case 'ADD_ITEM':
+        case 'ADD_ITEM': {
           const canonicalName = getCanonicalProductName(
             parsed.item ?? '',
             language,
           )
 
-          result = store.addItem(
+          result = store.addToList(
             canonicalName,
             parsed.quantity ?? 1,
           )
-          setSearch(null)
+          break
+        }
+
+        case 'REMOVE_ITEM': {
+          const canonicalName = getCanonicalProductName(
+            parsed.item ?? '',
+            language,
+          )
+
+          result = store.removeFromList(canonicalName)
+          break
+        }
+
+        case 'CLEAR_LIST':
+          result = store.clearList()
           break
 
-        case 'REMOVE_ITEM':
-          result = parsed.item
-            ? store.removeItem(
-                getCanonicalProductName(parsed.item, language),
-                )
-            : { intent: 'REMOVE_ITEM', reply: tr.removeWhich }
-          break
+        case 'SEARCH': {
+          const query = parsed.query ?? text
 
-        case 'CLEAR':
-          result = store.clearCart()
-          setSearch(null)
-          break
-
-        case 'SEARCH_ITEM':
-        case 'FILTER_PRICE': {
-          const results = store.searchProducts(parsed.item ?? '', {
-            maxPrice: parsed.maxPrice,
-            minPrice: parsed.minPrice,
+          setSearch({
+            query,
+            results: [],
+            loading: true,
           })
-          const label =
-            parsed.item ||
-            (parsed.maxPrice != null
-              ? tr.underPrice(parsed.maxPrice)
-              : parsed.minPrice != null
-                ? tr.overPrice(parsed.minPrice)
-                : 'items')
-          setSearch({ query: label, results, loading: false })
-          const priceNote =
-            parsed.maxPrice != null
-              ? tr.underPrice(parsed.maxPrice)
-              : parsed.minPrice != null
-                ? tr.overPrice(parsed.minPrice)
-                : ''
+
+          const results = getSuggestions(query, PRODUCTS)
+
+          setSearch({
+            query,
+            results,
+            loading: false,
+          })
+
           result = {
-            intent: parsed.intent,
-            reply: results.length
-              ? tr.searchFound(results.length, label, priceNote)
-              : tr.searchNone(label, priceNote),
+            success: true,
+            message:
+              results.length > 0
+                ? `I found ${results.length} products for "${query}".`
+                : `I couldn't find products for "${query}".`,
           }
+
           break
         }
 
-        case 'SUGGEST': {
-          const s = getSuggestions(store.cart)
-          const picks = [...s.seasonal.slice(0, 2), ...s.onSale.slice(0, 1)].slice(0, 3)
-          const low = s.lowStock.length ? ` ${tr.lowStock} ${s.lowStock.join(', ')}.` : ''
-          result = {
-            intent: 'SUGGEST',
-            reply: `${tr.suggestIntro}${low}`,
-            products: picks,
+        case 'ADD_PRODUCT': {
+          const product = PRODUCTS.find(
+            (p) =>
+              p.id === parsed.productId ||
+              p.name.toLowerCase() === parsed.item?.toLowerCase(),
+          )
+
+          if (!product) {
+            result = {
+              success: false,
+              message: 'I could not find that product.',
+            }
+            break
           }
+
+          result = store.addToCart(product, parsed.quantity ?? 1)
           break
         }
+
+        case 'REMOVE_PRODUCT': {
+          const product = PRODUCTS.find(
+            (p) =>
+              p.id === parsed.productId ||
+              p.name.toLowerCase() === parsed.item?.toLowerCase(),
+          )
+
+          if (!product) {
+            result = {
+              success: false,
+              message: 'I could not find that product.',
+            }
+            break
+          }
+
+          result = store.removeFromCart(product.id)
+          break
+        }
+
+        case 'VIEW_CART':
+          setCartOpen(true)
+          result = {
+            success: true,
+            message: 'Here is your cart.',
+          }
+          break
+
+        case 'CHECKOUT':
+          setCheckoutOpen(true)
+          result = {
+            success: true,
+            message: 'Opening checkout.',
+          }
+          break
 
         default:
           result = {
-            intent: 'UNKNOWN',
-            reply: tr.unknownCommand,
+            success: false,
+            message:
+              'I can help you add items, remove items, search products, or manage your cart.',
           }
       }
 
-      pushMessage({ role: 'assistant', text: result.reply, products: result.products })
-      if (result.toast) notify(result.toast.type, result.toast.message)
+      pushMessage({
+        role: 'assistant',
+        text: result.message,
+      })
+
+      if (result.success) {
+        notify({
+          title: 'BAZAR',
+          description: result.message,
+        })
+      }
 
       setProcessing(false)
       processingRef.current = false
     },
-    [store, pushMessage, notify, tr],
+    [language, notify, pushMessage, store],
   )
-
-  const handleFinalSpeech = useCallback(
-    (transcript: string) => {
-      void runCommand(transcript)
-    },
-    [runCommand],
-  )
-
-  const speech = useSpeechRecognition({ language, onFinalResult: handleFinalSpeech })
-
-  const handleMicToggle = useCallback(() => {
-    if (speech.listening) speech.stop()
-    else speech.start()
-  }, [speech])
 
   const handleSubmit = useCallback(() => {
-    if (speech.listening) speech.stop()
-    if (inputText.trim()) void runCommand(inputText)
-  }, [inputText, runCommand, speech])
+    void runCommand(inputText)
+  }, [inputText, runCommand])
+
+  const speech = useSpeechRecognition({
+    language,
+    onResult: (text) => {
+      setInputText(text)
+    },
+  })
+
+  const handleMicToggle = useCallback(() => {
+    if (speech.listening) {
+      speech.stop()
+    } else {
+      speech.start()
+    }
+  }, [speech])
 
   const handleAddProduct = useCallback(
-    (name: string) => {
-      const result = store.addItem(name)
-      if (result.toast) notify(result.toast.type, result.toast.message)
-    },
-    [store, notify],
-  )
+    (product: Product, quantity = 1) => {
+      const result = store.addToCart(product, quantity)
 
-  const handleRemove = useCallback(
-    (name: string) => {
-      const result = store.removeItem(name)
-      if (result.toast) notify(result.toast.type, result.toast.message)
-    },
-    [store, notify],
-  )
+      pushMessage({
+        role: 'assistant',
+        text: result.message,
+      })
 
-  const handleClear = useCallback(() => {
-    const result = store.clearCart()
-    if (result.toast) notify(result.toast.type, result.toast.message)
-  }, [store, notify])
+      if (result.success) {
+        notify({
+          title: 'Added to cart',
+          description: result.message,
+        })
+      }
+    },
+    [notify, pushMessage, store],
+  )
 
   const itemCount = useMemo(
     () => store.cart.reduce((n: number, i: CartItem) => n + i.quantity, 0),
     [store.cart],
   )
 
-  const availableProducts = useMemo(() => PRODUCTS.filter((p) => !p.outOfStock), [])
+  const availableProducts = useMemo(
+    () => PRODUCTS.filter((p) => !p.outOfStock),
+    [],
+  )
 
   const categoryProducts = useMemo(
     () =>
@@ -225,9 +295,20 @@ export function AssistantApp() {
           <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm shadow-primary/30">
             <ShoppingBag className="size-5" aria-hidden="true" />
           </span>
+
           <div className="hidden shrink-0 sm:block">
-            <h1 className="text-2xl font-black tracking-widest text-primary uppercase" style={{fontFamily: "'Quicksand', sans-serif", letterSpacing: "0.15em"}}>BAZAR</h1>
-            <p className="text-[11px] text-muted-foreground">Voice shopping assistant</p>
+            <h1
+              className="text-2xl font-black tracking-widest text-primary uppercase"
+              style={{
+                fontFamily: "'Quicksand', sans-serif",
+                letterSpacing: '0.15em',
+              }}
+            >
+              BAZAR
+            </h1>
+            <p className="text-[11px] text-muted-foreground">
+              {copy.voiceShoppingAssistant}
+            </p>
           </div>
 
           <div className="ml-auto flex shrink-0 items-center gap-2 sm:ml-0 sm:order-3">
@@ -238,12 +319,14 @@ export function AssistantApp() {
               aria-label={`Open cart, ${itemCount} items`}
             >
               <ShoppingBasket className="size-5" aria-hidden="true" />
+
               {itemCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
                   {itemCount}
                 </span>
               )}
             </button>
+
             <ProfileMenu onOpenOrders={() => setOrdersOpen(true)} />
           </div>
 
@@ -260,25 +343,29 @@ export function AssistantApp() {
               micError={speech.error}
               language={language}
               translations={tr}
-              onLanguageChange={setLanguage}
+              onLanguageChange={handleLanguageChange}
             />
           </div>
         </div>
       </header>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6">
-      <VoiceCommandCenter
-        listening={speech.listening}
-        transcript={speech.transcript}
-        processing={processing}
-        itemCount={itemCount}
-        language={language}
-        onCommand={(command) => void runCommand(command)}
-        onMicToggle={handleMicToggle}
-        micSupported={speech.supported}
-      />
+        <VoiceCommandCenter
+          listening={speech.listening}
+          transcript={speech.transcript}
+          processing={processing}
+          itemCount={itemCount}
+          language={language}
+          onCommand={(command) => void runCommand(command)}
+          onMicToggle={handleMicToggle}
+          micSupported={speech.supported}
+        />
 
-      <CategoryRail active={activeCategory} onSelect={setActiveCategory} />
+        <CategoryRail
+          active={activeCategory}
+          language={language}
+          onSelect={setActiveCategory}
+        />
 
         {search ? (
           <SearchResults
@@ -291,19 +378,27 @@ export function AssistantApp() {
           />
         ) : (
           <ProductGrid
-            title={activeCategory === 'All' ? 'Popular picks' : activeCategory}
+            title={
+              activeCategory === 'All'
+                ? copy.popularPicks
+                : localizeCategory(activeCategory, language)
+            }
             subtitle={
               activeCategory === 'All'
-                ? 'Fresh picks across every category'
-                : `${categoryProducts.length} items`
+                ? copy.freshPicks
+                : `${categoryProducts.length} ${copy.items}`
             }
             products={categoryProducts}
             language={language}
             onAdd={handleAddProduct}
-        />
+          />
         )}
 
-        <SuggestionsPanel cart={store.cart} onAdd={handleAddProduct} />
+        <SuggestionsPanel
+          cart={store.cart}
+          language={language}
+          onAdd={handleAddProduct}
+        />
       </div>
 
       <button
@@ -316,10 +411,17 @@ export function AssistantApp() {
       </button>
 
       {chatOpen && (
-        <div className="fixed inset-0 z-40 flex justify-end bg-foreground/20 backdrop-blur-sm" role="dialog" aria-label="Assistant chat">
+        <div
+          className="fixed inset-0 z-40 flex justify-end bg-foreground/20 backdrop-blur-sm"
+          role="dialog"
+          aria-label="Assistant chat"
+        >
           <div className="flex h-dvh w-full max-w-md flex-col bg-background p-4 shadow-2xl sm:p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-display text-base font-bold text-foreground">BAZAR Assistant</h2>
+              <h2 className="font-display text-base font-bold text-foreground">
+                BAZAR Assistant
+              </h2>
+
               <button
                 type="button"
                 onClick={() => setChatOpen(false)}
@@ -329,70 +431,53 @@ export function AssistantApp() {
                 <X className="size-4" aria-hidden="true" />
               </button>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto">
-              <ChatPanel
-                messages={messages}
-                processing={processing}
-                language={language}
-                onAddProduct={handleAddProduct}
-                onExample={(t) => void runCommand(t)}
-              />
-            </div>
+
+            <ChatPanel
+              messages={messages}
+              input={inputText}
+              onInputChange={setInputText}
+              onSubmit={handleSubmit}
+              processing={processing}
+              language={language}
+            />
           </div>
         </div>
       )}
 
       {cartOpen && (
-        <div className="fixed inset-0 z-40 flex justify-end bg-foreground/20 backdrop-blur-sm" role="dialog" aria-label="Shopping cart">
-          <div className="flex h-dvh w-full max-w-md flex-col overflow-y-auto bg-background p-4 shadow-2xl sm:p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-display text-base font-bold text-foreground">{tr.shoppingList}</h2>
-              <button
-                type="button"
-                onClick={() => setCartOpen(false)}
-                className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary"
-                aria-label="Close cart"
-              >
-                <X className="size-4" aria-hidden="true" />
-              </button>
-            </div>
-            <ShoppingList
-              cart={store.cart}
-              total={store.total}
-              hydrated={store.hydrated}
-              language={language}
-              onIncrement={store.setQuantity}
-              onRemove={handleRemove}
-              onClear={handleClear}
-            />
-            {store.cart.length > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  setCartOpen(false)
-                  setCheckoutOpen(true)
-                }}
-                className="mt-4 h-11 shrink-0 rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/30"
-              >
-                {tr.checkout} · ₹{(store.total * 83).toFixed(0)}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {checkoutOpen && user && (
-        <CheckoutFlow
-          cart={store.cart}
-          total={store.total}
-          userEmail={user.email}
-          userName={user.name}
-          onClose={() => setCheckoutOpen(false)}
-          onOrderComplete={handleClear}
+        <ShoppingList
+          items={store.cart}
+          onClose={() => setCartOpen(false)}
+          onCheckout={() => {
+            setCartOpen(false)
+            setCheckoutOpen(true)
+          }}
+          onRemove={(productId) => store.removeFromCart(productId)}
+          onUpdateQuantity={(productId, quantity) =>
+            store.updateCartQuantity(productId, quantity)
+          }
+          language={language}
         />
       )}
 
-      {ordersOpen && user && <OrderHistory userEmail={user.email} onClose={() => setOrdersOpen(false)} />}
+      {checkoutOpen && (
+        <CheckoutFlow
+          cart={store.cart}
+          onClose={() => setCheckoutOpen(false)}
+          onComplete={() => {
+            store.clearCart()
+            setCheckoutOpen(false)
+          }}
+          language={language}
+        />
+      )}
+
+      {ordersOpen && (
+        <OrderHistory
+          onClose={() => setOrdersOpen(false)}
+          language={language}
+        />
+      )}
     </main>
   )
 }
