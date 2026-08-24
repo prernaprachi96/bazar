@@ -256,14 +256,15 @@ export function AssistantApp() {
       </header>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6">
-        <VoiceCommandCenter
-          listening={speech.listening}
-          transcript={speech.transcript}
-          processing={processing}
-          itemCount={itemCount}
-          onCommand={(command) => void runCommand(command)}
-          onMicToggle={handleMicToggle}
-          micSupported={speech.supported}
+      <VoiceCommandCenter
+        listening={speech.listening}
+        transcript={speech.transcript}
+        processing={processing}
+        itemCount={itemCount}
+        language={language}
+        onCommand={(command) => void runCommand(command)}
+        onMicToggle={handleMicToggle}
+        micSupported={speech.supported}
       />
 
       <CategoryRail active={activeCategory} onSelect={setActiveCategory} />
