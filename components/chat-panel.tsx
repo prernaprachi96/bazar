@@ -31,7 +31,7 @@ export function ChatPanel({ messages, processing, onAddProduct, onExample }: Cha
           <Sparkles className="size-4" aria-hidden="true" />
         </span>
         <div>
-          <h2 className="font-display text-sm font-bold text-card-foreground">Petal Assistant</h2>
+          <h2 className="font-display text-sm font-bold text-card-foreground">BAZAR Voice Assistant</h2>
           <p className="text-xs text-muted-foreground">Your voice-powered shopping helper</p>
         </div>
       </div>
