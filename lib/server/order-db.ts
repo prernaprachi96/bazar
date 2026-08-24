@@ -1,38 +1,49 @@
 /**
- * order-db.ts — local file-based storage (no DATABASE_URL needed)
- * Orders are saved to a JSON file on disk during development.
- * In production (Vercel etc.) they are kept in memory for the session.
+ * order-db.ts — in-memory storage with optional file persistence.
+ * On Vercel (read-only filesystem) all orders are kept in memory per session.
+ * In local dev, orders are also written to .orders.json for persistence.
  */
 import { randomBytes } from 'node:crypto'
-import * as fs from 'node:fs'
-import * as path from 'node:path'
 import type { Order } from '@/lib/types'
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
 
-const DATA_FILE = path.join(process.cwd(), '.orders.json')
+// Detect if we are running in a writable local environment (not Vercel/lambda)
+const IS_LOCAL = process.env.NODE_ENV === 'development' && !process.env.VERCEL
 
+// Lazy-load fs only in local dev — avoids any import-time crash in serverless
 function loadOrders(): Order[] {
+  if (!IS_LOCAL) return []
   try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, 'utf-8')
-      return JSON.parse(raw) as Order[]
+    // Dynamic require so bundler/Vercel never tries to resolve fs at build time
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('node:fs') as typeof import('node:fs')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require('node:path') as typeof import('node:path')
+    const file = path.join(process.cwd(), '.orders.json')
+    if (fs.existsSync(file)) {
+      return JSON.parse(fs.readFileSync(file, 'utf-8')) as Order[]
     }
   } catch {
-    // ignore corrupt file
+    // corrupt file or env mismatch — silently fall through
   }
   return []
 }
 
 function saveOrders(orders: Order[]) {
+  if (!IS_LOCAL) return // no-op on Vercel
   try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(orders, null, 2), 'utf-8')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('node:fs') as typeof import('node:fs')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require('node:path') as typeof import('node:path')
+    fs.writeFileSync(path.join(process.cwd(), '.orders.json'), JSON.stringify(orders, null, 2), 'utf-8')
   } catch {
-    // fallback: keep in memory only
+    // keep in memory only
   }
 }
 
-// In-memory store (always used; file is secondary persistence)
+// In-memory store — primary storage everywhere, secondary persistence in dev
 let memOrders: Order[] = loadOrders()
 
 // ── Public API ───────────────────────────────────────────────────────────────
