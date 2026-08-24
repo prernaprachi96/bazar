@@ -4,8 +4,8 @@
 
 ---
 
-## Approach (200 words)
-
+## Approach 
+Deployment link - [https://bazar-sigma-blush.vercel.app/](https://bazar-sigma-blush.vercel.app/)
 BAZAR is a Next.js 14 web app that lets users manage a grocery shopping list entirely through voice or text commands. The core idea was to make adding, removing, and searching for items feel as natural as talking to someone.
 
 For voice input, I used the browser's built-in Web Speech API — no external service needed, works offline, and supports 8 languages (English, Hindi, Spanish, French, German, Japanese, Arabic, Portuguese). On top of the raw transcript, a custom rule-based NLP layer (`lib/nlp.ts`) detects intent (add, remove, search, suggest, clear) and extracts item names, quantities, and price filters — handling phrases like "Add 2 bottles of water" or "Find toothpaste under $5".
